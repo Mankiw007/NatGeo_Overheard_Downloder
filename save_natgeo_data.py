@@ -8,7 +8,7 @@ from pymysql.converters import escape_str
 from log_overheard import log_setting
 
 
-def check_instance(database='1', table='1', sqls=None, data=None):
+def check_instance(database='1', table='1', sqls=False, data=False):
     """
     Func: 用来检查用户传入的参数是否合法
     :param database: 数据库的名称
@@ -17,9 +17,9 @@ def check_instance(database='1', table='1', sqls=None, data=None):
     :param data: 字典，包含节目信息
     :return: 当提供的某个参数不合法时，返回False；提供的参数全部合法时，返回True; 没提供某个参数，则返回结果和该参数无关
     """
-    if data is None:
-        data = {'1': True}
-    if sqls is None:
+    if data is False:
+        data = {1: True}
+    if sqls is False:
         sqls = [1]
 
     status = []
@@ -319,10 +319,10 @@ class DataProcess(object):
 
                 # 查询每条信息是否已经在数据库的表中
                 for title, url in data.items():
-                    title = escape_str(title)
-                    cursor.execute(f"select 1 from {table} where title = {title} limit 1; ")
-                    num = cursor.fetchall()
-                    if num is None:
+                    # title = escape_str(title)
+                    cursor.execute(f"select 1 from {table} where title = {escape_str(title)} limit 1; ")
+                    num = cursor.fetchall()     # 返回值为一个元组
+                    if len(num) == 0:
                         logger.warning(f"节目【{title}】在数据库中没有保存。\n")
                         latest_issue[title] = url
 

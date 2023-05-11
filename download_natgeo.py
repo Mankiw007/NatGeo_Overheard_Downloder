@@ -33,7 +33,7 @@ def download_all(url, username, password, database, data_table):
     get_files(all_basic_info)
 
 
-def update_download(url, database, username, password, data_table):
+def update_download(url, username, password, database, data_table):
     """
     Func: 只下载与之前相比还没有下载过的最新更新的节目
     """
@@ -46,6 +46,10 @@ def update_download(url, database, username, password, data_table):
 
     # 更新的节目信息
     new_basic_info = natgeo_processor.check_latest_issue(database, data_table, all_basic_info)
+
+    if new_basic_info is None or len(new_basic_info) < 1:
+        logger.warning('没有节目更新，无需处理！')
+        return
 
     # 更新数据库，写入最新的节目信息
     new_natgeo_sqls = insert_sqls(data_table, new_basic_info)
@@ -115,14 +119,14 @@ if __name__ == '__main__':
                             "`NUM` int NOT NULL AUTO_INCREMENT COMMENT '序号', "
                             "`TITLE` varchar(255) NOT NULL COMMENT '标题', "
                             "`URL` varchar(255) DEFAULT NULL COMMENT '链接', "
-                            "`IS_DOWNLOADED` varchar(255) NOT NULL DEFAULT 'NO' COMMENT '是否已经下载',"
+                            "`DOWNLOAD_STATUS` varchar(255) NOT NULL DEFAULT 'NO' COMMENT '下载状态',"
                             "`UPDATED_TIME` datetime DEFAULT NULL COMMENT '更新时间', "
                             "PRIMARY KEY ( `NUM`) "
                             ") "
                             "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='所有节目的标题和链接';"
                             ]
     # 全量下载
-    download_all(natgeo_homepage, natgeo_user, natgeo_passwd, natgeo_db, natgeo_dt)
+    # download_all(natgeo_homepage, natgeo_user, natgeo_passwd, natgeo_db, natgeo_dt)
 
     # 增量下载
-    # update_download(natgeo_homepage, natgeo_user, natgeo_passwd, natgeo_db, natgeo_dt)
+    update_download(natgeo_homepage, natgeo_user, natgeo_passwd, natgeo_db, natgeo_dt)

@@ -362,7 +362,7 @@ class Downloader:
         Func: 保存音频文件
         url: 音频文件的链接
        """
-        logger.info('开始请求音频链接 ... ')
+        logger.info('开始请求音频数据 ... ')
         try:
             audio_data = requests.get(url)
             logger.info('音频数据获取完成。')
